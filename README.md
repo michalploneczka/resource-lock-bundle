@@ -3,7 +3,7 @@ Symfony Resource Lock Bundle
 
 A Symfony bundle that provides resource lock implementation
 
-[![Build Status](https://travis-ci.org/hrba/resource-lock-bundle.svg?branch=master)](https://travis-ci.org/hrba/resource-lock-bundle)
+[![Build Status](https://travis-ci.org/aboutcoders/resource-lock-bundle.svg?branch=master)](https://travis-ci.org/aboutcoders/resource-lock-bundle)
 
 ## Configuration
 

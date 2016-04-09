@@ -1,26 +1,23 @@
 {
     "name": "aboutcoders/resource-lock-bundle",
+    "type": "symfony-bundle",
     "description": "Simple resource locking",
     "license": "MIT",
-    "type": "library",
-    "keywords": [
-        "file",
-        "distribution"
-    ],
-    "homepage": "http://aboutcoders.com/",
+    "keywords": ["resource", "lock", "locker"],
+    "homepage": "http://aboutcoders.com",
     "authors": [
         {
             "name": "Wojciech Ciolko",
-            "email": "w.ciolko@gmail.com"
+            "email": "w.ciolko@aboutcoders.com"
         }
     ],
     "require": {
-        "symfony/symfony": "~2.6",
+        "symfony/symfony": "~2.6|~3.0",
         "sensio/framework-extra-bundle": "~3.0",
-        "gedmo/doctrine-extensions": "dev-master"
+        "gedmo/doctrine-extensions": "~2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.5",
+        "phpunit/phpunit": "~4",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2",
         "symfony/monolog-bundle": "~2"
