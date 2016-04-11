@@ -48,7 +48,7 @@ abc_resource_lock:
   managers:
     my_manager:
         prefix: my_prefix
-    another_manager
+    another_manager:
         prefix: another_prefix
 ```
 
