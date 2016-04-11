@@ -39,10 +39,29 @@ abc_resource_lock:
   db_driver: orm
 ```
 
+If you like to define your manager with custom prefix you can use `managers` section
+
+``` yaml
+# app/config/config.yml
+abc_resource_lock:
+  db_driver: orm
+  managers:
+    my_manager:
+        prefix: my_prefix
+    another_manager
+        prefix: another_prefix
+```
+
 ## Usage
 
 Use Lock manager to get, set or check locks
 
 ``` php
 $container->get('abc.resource_lock.lock_manager');
+```
+
+To access custom manager you need to use its name as following
+
+``` php
+$container->get('abc.resource_lock.lock_manager_my_manager');
 ```

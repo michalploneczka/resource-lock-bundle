@@ -11,10 +11,12 @@ use Doctrine\DBAL\Exception\ServerException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
- * @author Wojciech Ciolko <w.ciolko@gmail.com>
+ * @author Wojciech Ciolko <wojciech.ciolko@aboutcoders.com>
  */
 class LockManagerTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var  string */
+    protected $prefix = 'custom-prefix';
     /** @var string */
     private $class;
     /** @var ClassMetadata|\PHPUnit_Framework_MockObject_MockObject */
@@ -46,7 +48,7 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
             ->method('getRepository')
             ->will($this->returnValue($this->repository));
 
-        $this->subject = new LockManager($this->objectManager, $this->class);
+        $this->subject = new LockManager($this->objectManager, $this->class, $this->prefix);
     }
 
     public function testGetClass()
@@ -56,10 +58,11 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testIsLockedWithNoExistingLockReturnsFalse()
     {
-        $lockName = 'ABC';
+        $lockName           = 'ABC';
+        $lockNameWithPrefix = $this->prefix . '-ABC';
         $this->repository->expects($this->once())
             ->method('findOneBy')
-            ->with(array('name' => $lockName))
+            ->with(['name' => $lockNameWithPrefix])
             ->willReturn(null);
 
         $result = $this->subject->isLocked($lockName);
@@ -70,10 +73,11 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testIsLockedWithExistingLockReturnsTrue()
     {
-        $lockName = 'ABC';
+        $lockName           = 'ABC';
+        $lockNameWithPrefix = $this->prefix . '-ABC';
         $this->repository->expects($this->once())
             ->method('findOneBy')
-            ->with(array('name' => $lockName))
+            ->with(['name' => $lockNameWithPrefix])
             ->willReturn(new ResourceLock());
 
         $result = $this->subject->isLocked($lockName);
@@ -84,7 +88,6 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
     public function testLockWithNoExistingLockReturnsTrue()
     {
         $lockName = 'ABC';
-
         $this->objectManager->expects($this->once())
             ->method('persist');
         $this->objectManager->expects($this->once())
@@ -97,10 +100,11 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testReleaseWithNoExistingLockReturnsFalse()
     {
-        $lockName = 'ABC';
+        $lockName           = 'ABC';
+        $lockNameWithPrefix = $this->prefix . '-ABC';
         $this->repository->expects($this->once())
             ->method('findOneBy')
-            ->with(array('name' => $lockName))
+            ->with(['name' => $lockNameWithPrefix])
             ->willReturn(null);
 
         $result = $this->subject->release($lockName);
@@ -110,10 +114,11 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testReleaseWithExistingLockReturnsTrue()
     {
-        $lockName = 'ABC';
+        $lockName           = 'ABC';
+        $lockNameWithPrefix = $this->prefix . '-ABC';
         $this->repository->expects($this->once())
             ->method('findOneBy')
-            ->with(array('name' => $lockName))
+            ->with(['name' => $lockNameWithPrefix])
             ->willReturn(new ResourceLock());
 
         $this->objectManager->expects($this->once())

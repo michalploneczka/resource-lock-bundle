@@ -33,4 +33,12 @@ class ServiceTest extends KernelTestCase
         $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface', $subject);
     }
 
+    public function testCustomLockManager()
+    {
+        $manager1 = $this->container->get('abc.resource_lock.lock_manager_new_manager');
+        $manager2 = $this->container->get('abc.resource_lock.lock_manager_one_more_manager');
+
+        $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface', $manager1);
+        $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface', $manager2);
+    }
 }

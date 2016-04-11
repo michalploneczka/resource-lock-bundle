@@ -36,3 +36,8 @@ doctrine:
 
 abc_resource_lock:
   db_driver: orm
+  managers:
+    new_manager:
+      prefix: "my_prefix"
+    one_more_manager:
+      prefix: "one_more"

@@ -68,7 +68,42 @@ class BundleIntegrationTest extends KernelTestCase
         $lock = $manager->lock($name);
 
         $this->em->clear();
+        $this->assertStringStartsWith("abc-lock-", $lock->getName());
+        $this->assertNotNull($lock->getId());
+        $this->assertInstanceOf("\DateTime", $lock->getCreatedAt());
+        $this->assertTrue($manager->isLocked($name));
 
+        $this->assertTrue($manager->release($name));
+        $this->assertFalse($manager->isLocked($name));
+    }
+
+    /**
+     * @expectedException \Abc\Bundle\ResourceLockBundle\Exception\LockException
+     * @expectedExceptionMessage   Lock with provided name already exists
+     */
+    public function testLockResourceWhichIsAlreadyLocked()
+    {
+        /** @var LockManagerInterface $manager */
+        $manager = $this->container->get('abc.demo.lock_manager');
+
+        $name = 'test1';
+        $lock = $manager->lock($name);
+        $this->em->clear();
+        $lock = $manager->lock($name);
+        $this->em->clear();
+    }
+
+    public function testCustomManagerResourceRelease()
+    {
+        /** @var LockManagerInterface $manager */
+        $manager = $this->container->get('abc.resource_lock.lock_manager_new_manager');
+
+        $name = 'test';
+        $lock = $manager->lock($name);
+
+        $this->em->clear();
+
+        $this->assertStringStartsWith("my_prefix-", $lock->getName());
         $this->assertTrue($manager->isLocked($name));
 
         $this->assertTrue($manager->release($name));

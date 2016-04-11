@@ -35,6 +35,7 @@ class Configuration implements ConfigurationInterface
             ->end();
 
         $this->addResourceLockSection($rootNode);
+        $this->addCustomManagersSection($rootNode);
 
         return $treeBuilder;
     }
@@ -52,6 +53,25 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->end();
+    }
+
+    private function addCustomManagersSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('managers')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('prefix')
+                            ->info('This value is used for prefix lock for custom manager.')
+                            ->isRequired()
+                            ->cannotBeEmpty()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 
 }

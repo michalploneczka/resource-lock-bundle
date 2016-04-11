@@ -10,7 +10,7 @@ use Doctrine\DBAL\Exception\ServerException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
- * @author Wojciech Ciolko <w.ciolko@gmail.com>
+ * @author Wojciech Ciolko <wojciech.ciolko@aboutcoders.com>
  */
 class LockManager extends BaseLockManager
 {
@@ -20,19 +20,21 @@ class LockManager extends BaseLockManager
     protected $class;
     /** @var ObjectRepository */
     protected $repository;
-
+    /** @var string Lock prefix for manager */
+    protected $prefix;
 
     /**
-     * @param ObjectManager $om
-     * @param string        $class
+     * @param ObjectManager $om     Doctrine object manager
+     * @param string        $class  Entity class name
+     * @param string        $prefix Prefix of a lock record
      */
-    public function __construct(ObjectManager $om, $class)
+    public function __construct(ObjectManager $om, $class, $prefix = 'abc-lock')
     {
         $this->objectManager = $om;
         $this->repository    = $om->getRepository($class);
-
-        $metadata    = $om->getClassMetadata($class);
-        $this->class = $metadata->getName();
+        $this->prefix        = $prefix;
+        $metadata            = $om->getClassMetadata($class);
+        $this->class         = $metadata->getName();
     }
 
     /**
@@ -46,7 +48,8 @@ class LockManager extends BaseLockManager
 
     public function lock($name)
     {
-        $lock = $this->create($name);
+        $nameWithPrefix = $this->getNameWithPrefix($name);
+        $lock           = $this->create($nameWithPrefix);
         try {
             $this->objectManager->persist($lock);
             $this->objectManager->flush();
@@ -60,13 +63,15 @@ class LockManager extends BaseLockManager
 
     public function isLocked($name)
     {
-        $lock = $this->findByName($name);
+        $nameWithPrefix = $this->getNameWithPrefix($name);
+        $lock           = $this->findByName($nameWithPrefix);
         return $lock ? true : false;
     }
 
     public function release($name)
     {
-        $lock = $this->repository->findOneBy(array('name' => $name));
+        $nameWithPrefix = $this->getNameWithPrefix($name);
+        $lock           = $this->repository->findOneBy(['name' => $nameWithPrefix]);
         if ($lock) {
             $this->objectManager->remove($lock);
             $this->objectManager->flush();
@@ -82,5 +87,16 @@ class LockManager extends BaseLockManager
     public function getClass()
     {
         return $this->class;
+    }
+
+    /**
+     * Get name with prefix
+     *
+     * @param $name string Lock name
+     * @return string Lock name with prefix
+     */
+    private function getNameWithPrefix($name)
+    {
+        return $this->prefix . '-' . $name;
     }
 }
