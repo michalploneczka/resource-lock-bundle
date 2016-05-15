@@ -5,11 +5,11 @@ A Symfony bundle that provides resource lock implementation
 
 [![Build Status](https://travis-ci.org/aboutcoders/resource-lock-bundle.svg?branch=master)](https://travis-ci.org/aboutcoders/resource-lock-bundle)
 
-## Configuration
+## Installation
 
-Add the bundle:
+Add the AbcResourceLockBundle to your `composer.json` file
 
-``` json
+```json
 {
     "require": {
         "aboutcoders/resource-lock-bundle": "dev-master"
@@ -17,19 +17,21 @@ Add the bundle:
 }
 ```
 
-Enable the bundles in the kernel:
+Include the bundle in the AppKernel.php class
 
-``` php
-# app/AppKernel.php
+```php
 public function registerBundles()
 {
     $bundles = array(
         // ...
         new Abc\Bundle\ResourceLockBundle\AbcResourceLockBundle(),
-        // ...
     );
+
+    return $bundles;
 }
 ```
+
+## Configuration
 
 Configure the bundle
 
@@ -39,7 +41,7 @@ abc_resource_lock:
   db_driver: orm
 ```
 
-If you like to define your manager with custom prefix you can use `managers` section
+You can define custom managers with a custom prefix within the `managers` section
 
 ``` yaml
 # app/config/config.yml
@@ -54,13 +56,13 @@ abc_resource_lock:
 
 ## Usage
 
-Use Lock manager to get, set or check locks
+Use Lock manager to get, set or check locks:
 
 ``` php
 $container->get('abc.resource_lock.lock_manager');
 ```
 
-To access custom manager you need to use its name as following
+To retrieve the custom manager from the service container you have to specify it by its name:
 
 ``` php
 $container->get('abc.resource_lock.lock_manager_my_manager');
