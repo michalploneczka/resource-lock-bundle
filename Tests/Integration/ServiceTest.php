@@ -1,14 +1,22 @@
 <?php
+/*
+* This file is part of the resource-lock-bundle package.
+*
+* (c) Wojciech Ciolko <wojciech.ciolko@aboutcoders.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
 
 namespace Abc\Bundle\ResourceLockBundle\Tests\Integration;
 
+use Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ServiceTest extends KernelTestCase
 {
-
     /** @var ContainerInterface */
     private $container;
 
@@ -30,7 +38,7 @@ class ServiceTest extends KernelTestCase
     {
         $subject = $this->container->get('abc.resource_lock.lock_manager');
 
-        $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface', $subject);
+        $this->assertInstanceOf(LockManagerInterface::class, $subject);
     }
 
     public function testCustomLockManager()
@@ -38,7 +46,7 @@ class ServiceTest extends KernelTestCase
         $manager1 = $this->container->get('abc.resource_lock.lock_manager_new_manager');
         $manager2 = $this->container->get('abc.resource_lock.lock_manager_one_more_manager');
 
-        $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface', $manager1);
-        $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\LockManagerInterface', $manager2);
+        $this->assertInstanceOf(LockManagerInterface::class, $manager1);
+        $this->assertInstanceOf(LockManagerInterface::class, $manager2);
     }
 }

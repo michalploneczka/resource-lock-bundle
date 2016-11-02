@@ -67,3 +67,7 @@ To retrieve the custom manager from the service container you have to specify it
 ``` php
 $container->get('abc.resource_lock.lock_manager_my_manager');
 ```
+
+## License
+
+The MIT License (MIT). Please see [License File](./LICENSE) for more information.

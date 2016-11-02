@@ -1,12 +1,22 @@
 <?php
+/*
+* This file is part of the resource-lock-bundle package.
+*
+* (c) Wojciech Ciolko <wojciech.ciolko@aboutcoders.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
+
 namespace Abc\Bundle\ResourceLockBundle\Tests\Doctrine;
 
 use Abc\Bundle\ResourceLockBundle\Doctrine\LockManager;
 use Abc\Bundle\ResourceLockBundle\Entity\ResourceLock;
+use Abc\Bundle\ResourceLockBundle\Model\ResourceLockInterface;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Exception\ServerException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
@@ -31,10 +41,10 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->class         = 'Abc\Bundle\ResourceLockBundle\Entity\ResourceLock';
-        $this->classMetaData = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
-        $this->objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
-        $this->repository    = $this->getMock('Doctrine\Common\Persistence\ObjectRepository');
+        $this->class         = ResourceLock::class;
+        $this->classMetaData = $this->getMock(ClassMetadata::class);
+        $this->objectManager = $this->getMock(ObjectManager::class);
+        $this->repository    = $this->getMock(ObjectRepository::class);
 
         $this->objectManager->expects($this->any())
             ->method('getClassMetadata')
@@ -70,7 +80,6 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($result);
     }
 
-
     public function testIsLockedWithExistingLockReturnsTrue()
     {
         $lockName           = 'ABC';
@@ -95,7 +104,7 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
         $result = $this->subject->lock($lockName);
 
-        $this->assertInstanceOf('Abc\Bundle\ResourceLockBundle\Model\ResourceLockInterface', $result);
+        $this->assertInstanceOf(ResourceLockInterface::class, $result);
     }
 
     public function testReleaseWithNoExistingLockReturnsFalse()
@@ -139,7 +148,7 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
     {
         $lockName = 'ABC';
 
-        $ex = $this->getMock('\Doctrine\DBAL\Driver\DriverException');
+        $ex = $this->getMock(DriverException::class);
         $this->objectManager->expects($this->once())
             ->method('persist')->willThrowException(
                 new UniqueConstraintViolationException('Unique', $ex)
@@ -147,7 +156,6 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->subject->lock($lockName);
     }
-
 
     /**
      * @expectedException \Abc\Bundle\ResourceLockBundle\Exception\LockException
@@ -157,7 +165,7 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
     {
         $lockName = 'ABC';
 
-        $ex = $this->getMock('\Doctrine\DBAL\Driver\DriverException');
+        $ex = $this->getMock(DriverException::class);
         $this->objectManager->expects($this->once())
             ->method('persist')->willThrowException(
                 new ServerException('ServerException', $ex)
@@ -166,4 +174,3 @@ class LockManagerTest extends \PHPUnit_Framework_TestCase
         $this->subject->lock($lockName);
     }
 }
- 
