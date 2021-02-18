@@ -12,6 +12,7 @@ namespace Abc\Bundle\ResourceLockBundle\Doctrine;
 
 use Abc\Bundle\ResourceLockBundle\Exception\LockException;
 use Abc\Bundle\ResourceLockBundle\Model\LockManager as BaseLockManager;
+use Abc\Bundle\ResourceLockBundle\Model\ResourceLock;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Exception\ServerException;
@@ -69,10 +70,24 @@ class LockManager extends BaseLockManager
         }
     }
 
-    public function isLocked($name)
+    /**
+     * @param string $name
+     * @param int    $autoReleaseTime Time in seconds - default value is 0 - when value is 0 or smaller then automatic release lock feature is disabled
+     * @return bool
+     */
+    public function isLocked($name, int $autoReleaseTime = 0)
     {
         $nameWithPrefix = $this->getNameWithPrefix($name);
+
+        /** @var ResourceLock $lock */
         $lock           = $this->findByName($nameWithPrefix);
+
+        $actualDate = new \DateTime();
+        if (isset($lock) && ($autoReleaseTime > 0) && ($lock->getCreatedAt()->modify('+' . $autoReleaseTime . ' seconds') < $actualDate)) {
+            $this->release($name);
+            return false;
+        }
+
         return $lock ? true : false;
     }
 
@@ -87,7 +102,6 @@ class LockManager extends BaseLockManager
         }
         return false;
     }
-
 
     /**
      * {@inheritDoc}
